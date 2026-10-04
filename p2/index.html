@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Mídia Indoor</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        @media print {
+            body * { visibility: hidden; }
+            #areaImpressao, #areaImpressao * { visibility: visible; }
+            #areaImpressao { position: absolute; left: 0; top: 0; width: 100%; }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans">
+
+    <!-- TELA DE LOGIN -->
+    <div id="tela-login" class="fixed inset-0 bg-slate-900 flex items-center justify-center z-50 no-print">
+        <div class="bg-white p-8 rounded-xl shadow-2xl max-w-md w-full mx-4 text-center space-y-6">
+            <div>
+                <h2 class="text-2xl font-bold text-slate-900 tracking-wide">MÍDIA INDOOR</h2>
+                <p class="text-sm text-slate-500 mt-1">Insira a senha para acessar o painel</p>
+            </div>
+            <form onsubmit="verificarLogin(event)" class="space-y-4">
+                <input type="password" id="senhaInput" placeholder="Senha de acesso" required class="w-full border border-slate-300 rounded-lg px-4 py-3 text-center font-medium bg-white">
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg shadow transition">Entrar</button>
+            </form>
+            <p id="erroLogin" class="text-red-500 text-sm font-semibold hidden">⚠️ Senha incorreta!</p>
+        </div>
+    </div>
+
+    <!-- PAINEL PRINCIPAL -->
+    <div id="painel-principal" class="flex h-screen no-print hidden">
+        <div class="w-64 bg-slate-900 text-white flex flex-col">
+            <div class="p-5 text-xl font-bold border-b border-slate-700 tracking-wider">MÍDIA INDOOR</div>
+            <nav class="flex-1 p-4 space-y-2">
+                <button onclick="mudarAba('dashboard')" class="w-full text-left px-4 py-3 rounded hover:bg-slate-800 transition font-medium">📋 Dashboard</button>
+                <button onclick="mudarAba('contrato')" class="w-full text-left px-4 py-3 rounded hover:bg-slate-800 transition font-medium">📄 Gerador de Contrato</button>
+                <button onclick="mudarAba('config')" class="w-full text-left px-4 py-3 rounded hover:bg-slate-800 transition font-medium">⚙️ Configurações</button>
+            </nav>
+            <div class="p-4 border-t border-slate-800">
+                <button onclick="fazerLogout()" class="w-full text-left text-red-400 hover:text-red-300 px-4 py-2 text-sm font-medium transition">🚪 Sair</button>
+            </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-8">
+            <!-- ABA 1: DASHBOARD -->
+            <div id="aba-dashboard" class="space-y-8 dynamic-aba">
+                <div class="flex justify-between items-center">
+                    <h1 class="text-3xl font-bold text-slate-900">Dashboard</h1>
+                    <button onclick="abrirModalCadastro()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg shadow font-medium transition">+ Novo Assinante</button>
+                </div>
+                <div class="bg-white rounded-xl shadow overflow-hidden">
+                    <div class="p-5 border-b border-slate-200 bg-slate-50 flex flex-col md:flex-row gap-4 justify-between">
+                        <input type="text" id="buscaCliente" oninput="filtrarTabela()" placeholder="Buscar por nome..." class="border border-slate-300 rounded-lg px-4 py-2 w-full md:w-80 bg-white">
+                        <select id="filtroStatus" onchange="filtrarTabela()" class="border border-slate-300 rounded-lg px-4 py-2 bg-white">
+                            <option value="">Todos os Status</option>
+                            <option value="Ativo">Ativos</option>
+                            <option value="Inadimplente">Inadimplentes</option>
+                            <option value="Cancelado">Cancelados</option>
+                        </select>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-900 text-white text-sm uppercase">
+                                    <th class="p-4">Cliente</th>
+                                    <th class="p-4">Plano</th>
+                                    <th class="p-4">Valor</th>
+                                    <th class="p-4 text-center">Telas</th>
+                                    <th class="p-4">Status</th>
+                                    <th class="p-4 text-center">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelaCorpo" class="divide-y divide-slate-200 text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ABA 2: GERADOR DE CONTRATOS -->
+            <div id="aba-contrato" class="space-y-6 dynamic-aba hidden">
+                <div class="flex justify-between items-center">
+                    <h1 class="text-3xl font-bold text-slate-900">Contrato de Prestação de Serviços</h1>
+                    <button onclick="window.print()" class="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg shadow font-medium transition">🖨️ Imprimir / PDF</button>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-lg border border-slate-200 max-w-4xl mx-auto text-justify leading-relaxed" id="areaImpressao">
+                    <p class="text-center font-bold text-lg mb-6 uppercase">CONTRATO DE ADESÃO À MÍDIA INDOOR</p>
+                    <p class="mb-4">Pelo presente instrumento, de um lado a empresa gestora de Mídia Indoor, e do outro lado o cliente <strong id="c-nome">_______</strong>, inscrito no CPF/CNPJ sob o nº <strong id="c-doc">_______</strong>, com e-mail <strong id="c-email">_______</strong>, firmam o presente acordo de veiculação publicitária.</p>
+                    
+                    <h3 class="font-bold my-4">CLÁUSULA PRIMEIRA - DO OBJETO E CONTEÚDO</h3>
+                    <p class="mb-4">O presente contrato tem como objeto a veiculação de conteúdos publicitários em <strong id="c-telas">__</strong> ponto(s) de exibição (Telas de Mídia Indoor). O CONTRATANTE assume total responsabilidade civil e criminal pelo teor do material publicitário fornecido, incluindo direitos autorais de imagens, marcas e músicas, isentando a CONTRATADA de qualquer corresponsabilidade por processos de terceiros.</p>
+                    
+                    <h3 class="font-bold my-4">CLÁUSULA SEGUNDA - DOS VALORES E VIGÊNCIA</h3>
+                    <p class="mb-4">O cliente adere ao plano <strong id="c-plano">_______</strong>, iniciando os serviços na data de <strong id="c-data">__/__/____</strong>, comprometendo-se ao pagamento recorrente no valor de <strong id="c-valor">R$ 0,00</strong>. Nos planos com fidelidade, a rescisão antecipada por iniciativa do cliente implicará em multa rescisória equivalente a 20% (vinte por cento) sobre o valor total das parcelas vincendas até o término do período.</p>
+                    
+                    <h3 class="font-bold my-4">CLÁUSULA TERCEIRA - DA MANUTENÇÃO TÉCNICA E PARCERIAS</h3>
+                    <p class="mb-4">A CONTRATADA resguarda-se o direito de suspender temporariamente a exibição para manutenções preventivas ou corretivas por até 48 horas mensais, sem que isso gera descontos. Caso ocorra o fechamento ou rescisão com o ponto comercial onde a tela está instalada, a CONTRATADA fica autorizada a remanejar o anúncio para outro ponto de igual fluxo público, notificando o cliente.</p>
+
+                    <div class="mt-12 flex justify-between pt-8 border-t border-slate-300 text-center">
+                        <div><p class="border-t border-slate-400 w-48 mx-auto pt-2 text-xs">CONTRATADA</p></div>
+                        <div><p class="border-t border-slate-400 w-48 mx-auto pt-2 text-xs">CONTRATANTE</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ABA 3: CONFIGURAÇÕES -->
+            <div id="aba-config" class="space-y-6 dynamic-aba hidden">
+                <h1 class="text-3xl font-bold text-slate-900">Configuração da API</h1>
+                <div class="bg-white p-6 rounded-xl shadow space-y-4 max-w-2xl">
+                    <label class="block text-sm font-semibold text-slate-700">URL do Web App (Google Apps Script):</label>
+                    <input type="text" id="apiUrlInput" placeholder="https://script.google.com/macros/s/.../exec" class="w-full border border-slate-300 rounded-lg px-4 py-2.5 bg-white">
+                    <button onclick="salvarConfig()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-medium transition">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE CADASTRO -->
+    <div id="modalCadastro" class="fixed inset-0 bg-black/50 items-center justify-center hidden z-50 p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-lg w-full overflow-hidden">
+            <div class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center">
+                <h3 class="font-bold text-lg">Cadastrar Novo Assinante</h3>
+                <button onclick="fecharModalCadastro()" class="text-slate-400 hover:text-white text-xl">&times;</button>
+            </div>
+            <form id="formAssinante" onsubmit="salvarAssinante(event)" class="p-6 space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="col-span-2">
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Nome do Cliente</label>
+                        <input type="text" id="f-cliente" required class="w-full border rounded px-3 py-2 bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">CPF/CNPJ</label>
+                        <input type="text" id="f-documento" required class="w-full border rounded px-3 py-2 bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Telefone (DDD + Número)</label>
+                        <input type="text" id="f-telefone" required class="w-full border rounded px-3 py-2 bg-white">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">E-mail</label>
+                        <input type="email" id="f-email" required class="w-full border rounded px-3 py-2 bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Plano</label>
+                        <select id="f-plano" class="w-full border rounded px-3 py-2 bg-white">
+                            <option value="Mensal">Mensal</option>
+                            <option value="Semestral">Semestral</option>
+                            <option value="Anual">Anual</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Valor</label>
+                        <input type="number" step="0.01" id="f-valor" required class="w-full border rounded px-3 py-2 bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Qtd Telas</label>
+                        <input type="number" id="f-telas" value="1" required class="w-full border rounded px-3 py-2 bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Data Início</label>
+                        <input type="date" id="f-inicio" required class="w-full border rounded px-3 py-2 bg-white">
+                    </div>
+                </div>
+                <div class="pt-4 flex justify-end gap-3">
+                    <button type="button" onclick="fecharModalCadastro()" class="px-4 py-2 border rounded text-slate-600 hover:bg-slate-100">Cancelar</button>
+                    <button type="submit" class="px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 shadow font-medium">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const SENHA_CORRETA = "midia123";
+        let listaClientes = [];
+        let apiUrl = localStorage.getItem('midia_indoor_api_url') || '';
+        document.getElementById('apiUrlInput').value = apiUrl;
+
+        function verificarLogin(e) {
+            e.preventDefault();
+            if (document.getElementById('senhaInput').value === SENHA_CORRETA) {
+                localStorage.setItem('logado_midia_indoor', 'true');
+                document.getElementById('tela-login').classList.add('hidden');
+                document.getElementById('painel-principal').classList.remove('hidden');
+                carregarDados();
+            } else {
+                document.getElementById('erroLogin').classList.remove('hidden');
+            }
+        }
+
+        function checarSessao() {
+            if (localStorage.getItem('logado_midia_indoor') === 'true') {
+                document.getElementById('tela-login').classList.add('hidden');
+                document.getElementById('painel-principal').classList.remove('hidden');
+                carregarDados();
+            }
+        }
+
+        function fazerLogout() { localStorage.removeItem('logado_midia_indoor'); location.reload(); }
+        function mudarAba(abaId) { document.querySelectorAll('.dynamic-aba').forEach(aba => aba.classList.add('hidden')); document.getElementById('aba-' + abaId).classList.remove('hidden'); }
+        function salvarConfig() { apiUrl = document.getElementById('apiUrlInput').value.trim(); localStorage.setItem('midia_indoor_api_url', apiUrl); alert('Salvo!'); carregarDados(); }
+        function abrirModalCadastro() { document.getElementById('modalCadastro').classList.replace('hidden', 'flex'); }
+        function fecharModalCadastro() { document.getElementById('modalCadastro').classList.replace('flex', 'hidden'); }
+
+        async function carregarDados() {
+            if (!apiUrl) { mudarAba('config'); return; }
+            try { const response = await fetch(apiUrl); listaClientes = await response.json(); renderizarTabela(listaClientes); } catch (e) { console.error(e); }
+        }
+
+        function cobrarCliente(nome, telefone, valor) {
+            const limpo = telefone.replace(/\D/g, '');
+            const msg = `Olá ${nome}, tudo bem? Passando para lembrar do vencimento da sua assinatura de Mídia Indoor no valor de R$ ${Number(valor).toFixed(2)}. Como podemos proceder com o acerto?`;
+            window.open(`https://api.whatsapp.com/send?phone=55${limpo}&text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        function renderizarTabela(dados) {
+            const corpo = document.getElementById('tabelaCorpo'); corpo.innerHTML = '';
+            dados.forEach(item => {
+                const badge = item.status === 'Ativo' ? 'bg-green-100 text-green-800' : item.status === 'Inadimplente' ? 'bg-red-100 text-red-800' : 'bg-slate-200 text-slate-700';
+                corpo.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="p-4 font-semibold text-slate-900">${item.cliente}</td>
+                        <td class="p-4">${item.plano}</td>
+                        <td class="p-4">R$ ${Number(item.valor).toFixed(2)}</td>
+                        <td class="p-4 text-center">${item.telas}</td>
+                        <td class="p-4">
+                            <select onchange="atualizarStatus('${item.id}', this.value)" class="text-xs font-semibold rounded-full px-2.5 py-1 ${badge}">
+                                <option value="Ativo" ${item.status === 'Ativo' ? 'selected' : ''}>Ativo</option>
+                                <option value="Inadimplente" ${item.status === 'Inadimplente' ? 'selected' : ''}>Inadimplente</option>
+                                <option value="Cancelado" ${item.status === 'Cancelado' ? 'selected' : ''}>Cancelado</option>
+                            </select>
+                        </td>
+                        <td class="p-4 text-center space-x-1 whitespace-nowrap">
+                            <button onclick='abrirContrato(${JSON.stringify(item)})' class="bg-slate-800 text-white text-xs px-2.5 py-1.5 rounded">📄 Contrato</button>
+                            <button onclick="cobrarCliente('${item.cliente}', '${item.telefone}', '${item.valor}')" class="bg-green-600 text-white text-xs px-2.5 py-1.5 rounded">💬 WhatsApp</button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        async function salvarAssinante(e) {
+            e.preventDefault(); if (!apiUrl) return;
+            const payload = {
+                cliente: document.getElementById('f-cliente').value, documento: document.getElementById('f-documento').value,
+                telefone: document.getElementById('f-telefone').value, email: document.getElementById('f-email').value,
+                plano: document.getElementById('f-plano').value, valor: document.getElementById('f-valor').value,
+                telas: document.getElementById('f-telas').value, inicio: document.getElementById('f-inicio').value, status: 'Ativo'
+            };
+            fecharModalCadastro();
+            await fetch(apiUrl, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            document.getElementById('formAssinante').reset(); setTimeout(carregarDados, 1500);
+        }
+
+        async function atualizarStatus(id, carrotStatus) {
+            if (!apiUrl) return;
+            await fetch(apiUrl, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'update', id: id, status: carrotStatus }) });
+            setTimeout(carregarDados, 1000);
+        }
+
+        function abrirContrato(cliente) {
+            document.getElementById('c-nome').innerText = cliente.cliente; document.getElementById('c-doc').innerText = cliente.documento;
+            document.getElementById('c-email').innerText = cliente.email; document.getElementById('c-telas').innerText = cliente.telas;
+            document.getElementById('c-plano').innerText = cliente.plano; document.getElementById('c-valor').innerText = 'R$ ' + Number(cliente.valor).toFixed(2);
+            document.getElementById('c-data').innerText = cliente.inicio.split('-').reverse().join('/'); mudarAba('contrato');
+        }
+
+        function filtrarTabela() {
+            const busca = document.getElementById('buscaCliente').value.toLowerCase();
+            const status = document.getElementById('filtroStatus').value;
+            const filtrados = listaClientes.filter(item => (item.cliente.toLowerCase().includes(busca)) && (status === "" || item.status === status));
+            renderizarTabela(filtrados);
+        }
+
+        checarSessao();
+    </script>
+</body>
+</html>
