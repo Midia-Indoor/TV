@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#8B1A1A">
+  <title>Acompanhar pedido</title>
+  <meta name="description" content="Acompanhe o status do seu pedido em tempo real.">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛵</text></svg>">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="pagina-acompanhar">
+
+  <header class="topo">
+    <div class="container">
+      <div class="topo-principal">
+        <div class="marca">
+          <a class="marca-logo" id="acLogo" href="index.html" aria-label="Voltar ao cardápio" style="text-decoration:none">🍔</a>
+          <div class="marca-texto">
+            <h1 class="marca-nome" id="acNome">Acompanhar pedido</h1>
+            <p class="marca-sub">Atualiza sozinho, sem recarregar</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container" id="conteudo">
+    <section class="ac-cartao" aria-live="polite">
+      <p class="ac-numero" id="acNumero"></p>
+
+      <div class="ac-status" id="acStatus">Consultando…</div>
+
+      <ol class="ac-passos" id="acPassos"></ol>
+
+      <p class="ac-dica" id="acDica"></p>
+
+      <form class="ac-form" id="acForm" hidden>
+        <label for="acBusca">Número do pedido</label>
+        <div class="ac-form-campo">
+          <input id="acBusca" type="text" inputmode="numeric" autocomplete="off" placeholder="0310-117">
+          <button type="submit" class="btn btn-primario">Consultar</button>
+        </div>
+        <p class="ac-ajuda">É o número que apareceu no seu WhatsApp, no formato <strong>DDMM-NNN</strong>.</p>
+      </form>
+
+      <p class="ac-atualizado" id="acAtualizado"></p>
+
+      <p class="ac-voltar"><a href="index.html">← Voltar ao cardápio</a></p>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <div class="container">
+      <p id="acRodape">Cardápio Digital</p>
+    </div>
+  </footer>
+
+  <script src="assets/js/planilha-site.js"></script>
+  <script src="assets/js/planilha.js"></script>
+  <script src="assets/js/acompanhar.js"></script>
+</body>
+</html>

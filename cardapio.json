@@ -1,0 +1,210 @@
+{
+  "config": {
+    "nome": "Lanchonete do Zé",
+    "descricao": "Lanches, porções e bebidas geladas",
+    "whatsapp": "5511999999999",
+    "mensagemAbertura": "Olá! Gostaria de fazer um pedido no cardápio digital:",
+    "corPrimaria": "#8B1A1A",
+    "simboloMoeda": "R$",
+    "taxaEntrega": 0,
+    "pedidoMinimo": 0,
+    "aberto": true,
+    "mensagemFechado": "Estamos fechados no momento. Volte em breve!",
+    "pedirNome": true,
+    "pedirEntrega": true,
+    "formasPagamento": "Dinheiro, Pix, Cartao",
+    "tempoEntrega": "40-60 min",
+    "tempoRetirada": "20-30 min",
+    "enderecoLoja": "",
+    "instagram": "",
+    "planilhaUrl": "",
+    "planilhaToken": ""
+  },
+  "bairros": [
+    { "nome": "Centro", "taxa": 5, "tempo": "30-40 min", "ativo": true }
+  ],
+  "categorias": [
+    {
+      "id": "lanches",
+      "nome": "Lanches",
+      "icone": "🍔",
+      "itens": [
+        {
+          "id": "x-burguer",
+          "nome": "X-Burguer",
+          "descricao": "Pão brioche, hambúrguer 150g, queijo cheddar, salada e molho da casa",
+          "preco": 18.9,
+          "imagem": "img/x-burguer-tradicional.jpg",
+          "destaque": true,
+          "disponivel": true,
+          "opcoes": [
+            { "grupo": "Tamanho", "tipo": "unico", "obrigatorio": true, "itens": [
+              { "nome": "Normal", "preco": 0 },
+              { "nome": "Duplo", "preco": 8 }
+            ] },
+            { "grupo": "Adicionais", "tipo": "multiplo", "obrigatorio": false, "itens": [
+              { "nome": "Bacon", "preco": 4 },
+              { "nome": "Cheddar extra", "preco": 3 },
+              { "nome": "Ovo", "preco": 2 }
+            ] }
+          ]
+        },
+        {
+          "id": "x-burguer-duplo",
+          "nome": "X-Burguer Duplo",
+          "descricao": "Dois hambúrgueres, queijo, bacon, cebola caramelizada e molho especial",
+          "preco": 27.9,
+          "imagem": "img/x-burguer-duplo.jpg",
+          "destaque": true,
+          "disponivel": true
+        },
+        {
+          "id": "x-salada",
+          "nome": "X-Salada",
+          "descricao": "Hambúrguer, queijo, alface, tomate, pepino, cebola e maionese da casa",
+          "preco": 21.9,
+          "imagem": "img/x-salada.jpg",
+          "destaque": false,
+          "disponivel": true
+        },
+        {
+          "id": "x-frango",
+          "nome": "X-Frango",
+          "descricao": "Filé de frango empanado, queijo, salada e maionese verde",
+          "preco": 20.9,
+          "imagem": "img/x-frango.jpg",
+          "destaque": false,
+          "disponivel": true
+        },
+        {
+          "id": "batata-frita-simples",
+          "nome": "Batata Frita Simples",
+          "descricao": "Porção individual de batata frita crocante com sal",
+          "preco": 9.9,
+          "imagem": "img/batata-frita-simples.jpg",
+          "destaque": false,
+          "disponivel": true
+        }
+      ]
+    },
+    {
+      "id": "porcoes",
+      "nome": "Porções",
+      "icone": "🍟",
+      "itens": [
+        {
+          "id": "batata-cheddar-bacon",
+          "nome": "Batata Cheddar & Bacon",
+          "descricao": "Batata frita coberta com cheddar cremoso e bacon em cubos",
+          "preco": 24.9,
+          "imagem": "img/batata-cheddar-e-bacon.jpg",
+          "destaque": true,
+          "disponivel": true
+        },
+        {
+          "id": "calabresa-acebolada",
+          "nome": "Calabresa Acebolada",
+          "descricao": "Calabresa fatiada na chapa com cebola e vinagrete",
+          "preco": 26.9,
+          "imagem": "img/calabresa-acebolada.jpg",
+          "destaque": false,
+          "disponivel": true
+        },
+        {
+          "id": "frango-a-passarinho",
+          "nome": "Frango a Passarinho",
+          "descricao": "Frango frito com alho e óleo, serve de 2 a 3 pessoas",
+          "preco": 45.9,
+          "imagem": "img/frangoa-passarinho.jfif",
+          "destaque": true,
+          "disponivel": true
+        },
+        {
+          "id": "isca-de-peixe",
+          "nome": "Isca de Peixe",
+          "descricao": "Tiras de tilápia empanadas com molho tartaro e limão",
+          "preco": 39.9,
+          "imagem": "img/isca-de-peixe.jpg",
+          "destaque": false,
+          "disponivel": true
+        }
+      ]
+    },
+    {
+      "id": "combos",
+      "nome": "Combos",
+      "icone": "🍿",
+      "itens": [
+        {
+          "id": "combo-do-zao",
+          "nome": "Combo do Zão",
+          "descricao": "X-Burguer, batata frita e refrigerante lata",
+          "preco": 27.9,
+          "imagem": "img/bugger-refri-batata.jpg",
+          "destaque": true,
+          "disponivel": true
+        },
+        {
+          "id": "combo-duplo",
+          "nome": "Combo Duplo",
+          "descricao": "X-Burguer Duplo, batata média e refrigerante lata",
+          "preco": 36.9,
+          "imagem": "img/burguer-combo-tim-batata-refrigerante-lata.jpg",
+          "destaque": false,
+          "disponivel": true
+        }
+      ]
+    },
+    {
+      "id": "bebidas",
+      "nome": "Bebidas",
+      "icone": "🥤",
+      "itens": [
+        {
+          "id": "refrigerante-lata",
+          "nome": "Refrigerante Lata",
+          "descricao": "Coca-Cola, Guaraná, Fanta ou Sprite. Gelada.",
+          "preco": 5.5,
+          "imagem": "img/refrigerante-lata.jpg",
+          "destaque": false,
+          "disponivel": true,
+          "opcoes": [
+            { "grupo": "Sabor", "tipo": "unico", "obrigatorio": true, "itens": [
+              { "nome": "Coca-Cola", "preco": 0 },
+              { "nome": "Guaraná", "preco": 0 },
+              { "nome": "Fanta Laranja", "preco": 0 },
+              { "nome": "Sprite", "preco": 0 }
+            ] }
+          ]
+        },
+        {
+          "id": "suco-natural-400",
+          "nome": "Suco Natural 400ml",
+          "descricao": "Laranja, maracujá, limão ou maracujá com limão",
+          "preco": 8.0,
+          "imagem": "img/suco-natural-400ml.jpg",
+          "destaque": false,
+          "disponivel": true
+        },
+        {
+          "id": "agua-mineral-500",
+          "nome": "Água Mineral 500ml",
+          "descricao": "Com ou sem gás",
+          "preco": 3.0,
+          "imagem": "img/agua-mineral-500ml.jpg",
+          "destaque": false,
+          "disponivel": true
+        },
+        {
+          "id": "sorvete-chocolate",
+          "nome": "Sorvete de Chocolate",
+          "descricao": "Bola de sorvete cremoso com calda de chocolate",
+          "preco": 6.0,
+          "imagem": "img/sorvete-de-chocolate.jpg",
+          "destaque": false,
+          "disponivel": false
+        }
+      ]
+    }
+  ]
+}
