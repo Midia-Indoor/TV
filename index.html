@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mídia Indoor - Sistema de Gestão</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <!-- TELA DE LOGIN -->
+  <div id="login-screen" class="login-container">
+    <div class="login-box">
+      <div class="login-header">
+        <div class="login-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <h1>Mídia Indoor</h1>
+        <p>Sistema de Gestão</p>
+      </div>
+      
+      <form id="login-form">
+        <div class="form-group">
+          <label for="login-password">Senha de Acesso</label>
+          <input type="password" id="login-password" placeholder="Digite a senha" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Entrar</button>
+        <p id="login-error" class="error-message hidden">Senha incorreta. Tente novamente.</p>
+      </form>
+      
+      <div class="login-footer">
+        <p>Acesso restrito a administradores</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- APLICAÇÃO PRINCIPAL -->
+  <div id="app" class="hidden">
+    <!-- HEADER -->
+    <header class="header">
+      <div class="header-content">
+        <div class="header-brand">
+          <div class="header-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+          </div>
+          <div>
+            <h1>Mídia Indoor</h1>
+            <p>Sistema de Gestão</p>
+          </div>
+        </div>
+        
+        <div class="header-actions">
+          <button onclick="refreshData()" class="btn-icon" title="Atualizar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+          </button>
+          <button onclick="logout()" class="btn-icon" title="Sair">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- TABS -->
+    <nav class="tabs">
+      <div class="tabs-content">
+        <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn active">
+          📊 Dashboard
+        </button>
+        <button onclick="switchTab('assinantes')" id="tab-assinantes" class="tab-btn">
+          👥 Assinantes
+        </button>
+        <button onclick="switchTab('contratos')" id="tab-contratos" class="tab-btn">
+          📄 Contratos
+        </button>
+        <button onclick="switchTab('cobrancas')" id="tab-cobrancas" class="tab-btn">
+          💰 Cobranças
+        </button>
+      </div>
+    </nav>
+
+    <!-- CONTEÚDO -->
+    <main class="main-content">
+      
+      <!-- TAB: DASHBOARD -->
+      <div id="content-dashboard" class="tab-content active">
+        <div class="stats-grid">
+          <!-- Card Assinantes -->
+          <div class="stat-card">
+            <div class="stat-header">
+              <div>
+                <p class="stat-label">Total Assinantes</p>
+                <p class="stat-value" id="stat-total-assinantes">-</p>
+              </div>
+              <div class="stat-icon blue">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-footer">
+              <span class="text-success" id="stat-ativos">-</span>
+              <span class="text-muted">ativos</span>
+            </div>
+          </div>
+
+          <!-- Card Inadimplentes -->
+          <div class="stat-card">
+            <div class="stat-header">
+              <div>
+                <p class="stat-label">Inadimplentes</p>
+                <p class="stat-value text-danger" id="stat-inadimplentes">-</p>
+              </div>
+              <div class="stat-icon red">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-footer">
+              <button onclick="switchTab('cobrancas')" class="text-link">Ver cobranças →</button>
+            </div>
+          </div>
+
+          <!-- Card Receita -->
+          <div class="stat-card">
+            <div class="stat-header">
+              <div>
+                <p class="stat-label">Receita Mensal</p>
+                <p class="stat-value text-success" id="stat-receita">-</p>
+              </div>
+              <div class="stat-icon green">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-footer">
+              <span class="text-muted">Contratos ativos: <span id="stat-contratos">-</span></span>
+            </div>
+          </div>
+
+          <!-- Card Cobranças Pendentes -->
+          <div class="stat-card">
+            <div class="stat-header">
+              <div>
+                <p class="stat-label">Cobranças Pendentes</p>
+                <p class="stat-value text-warning" id="stat-pendentes">-</p>
+              </div>
+              <div class="stat-icon yellow">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-footer">
+              <span class="text-muted">Valor: <span id="stat-valor-pendente">-</span></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ações Rápidas -->
+        <div class="card">
+          <h3 class="card-title">Ações Rápidas</h3>
+          <div class="actions-grid">
+            <button onclick="showNewAssinanteModal()" class="btn btn-primary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+              </svg>
+              Novo Assinante
+            </button>
+            <button onclick="showNewContractModal()" class="btn btn-success">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+              Gerar Contrato
+            </button>
+            <button onclick="cobrarInadimplentes()" class="btn btn-warning">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+              </svg>
+              Cobrar Inadimplentes
+            </button>
+            <button onclick="exportData()" class="btn btn-secondary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+              </svg>
+              Exportar Dados
+            </button>
+          </div>
+        </div>
+
+        <!-- Últimos Assinantes -->
+        <div class="card">
+          <h3 class="card-title">Últimos Assinantes</h3>
+          <div class="table-container">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Plano</th>
+                  <th>Valor</th>
+                  <th>Status</th>
+                  <th>Vencimento</th>
+                </tr>
+              </thead>
+              <tbody id="recent-assinantes">
+                <tr><td colspan="5" class="text-center text-muted">Carregando...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: ASSINANTES -->
+      <div id="content-assinantes" class="tab-content">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Assinantes</h3>
+            <div class="card-actions">
+              <input type="text" id="search-assinantes" placeholder="Buscar..." class="input">
+              <select id="filter-status" class="input">
+                <option value="">Todos os Status</option>
+                <option value="Ativo">Ativo</option>
+                <option value="Inadimplente">Inadimplente</option>
+                <option value="Atrasado">Atrasado</option>
+                <option value="Cancelado">Cancelado</option>
+              </select>
+              <button onclick="showNewAssinanteModal()" class="btn btn-primary">+ Novo</button>
+            </div>
+          </div>
+          <div class="table-container">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>CPF/CNPJ</th>
+                  <th>Telefone</th>
+                  <th>Plano</th>
+                  <th>Valor</th>
+                  <th>Status</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="assinantes-table">
+                <tr><td colspan="7" class="text-center text-muted">Carregando...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: CONTRATOS -->
+      <div id="content-contratos" class="tab-content">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Contratos</h3>
+            <div class="card-actions">
+              <button onclick="showNewContractModal()" class="btn btn-success">+ Gerar Contrato</button>
+            </div>
+          </div>
+          <div class="table-container">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Número</th>
+                  <th>Assinante</th>
+                  <th>Plano</th>
+                  <th>Valor</th>
+                  <th>Período</th>
+                  <th>Status</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="contratos-table">
+                <tr><td colspan="7" class="text-center text-muted">Carregando...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: COBRANÇAS -->
+      <div id="content-cobrancas" class="tab-content">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Cobranças</h3>
+            <div class="card-actions">
+              <button onclick="cobrarInadimplentes()" class="btn btn-warning">📱 Cobrar via WhatsApp</button>
+            </div>
+          </div>
+          <div class="table-container">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Assinante</th>
+                  <th>Telefone</th>
+                  <th>Valor</th>
+                  <th>Vencimento</th>
+                  <th>Status</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="cobrancas-table">
+                <tr><td colspan="6" class="text-center text-muted">Carregando...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- MODAL: NOVO ASSINANTE -->
+  <div id="modal-assinante" class="modal hidden">
+    <div class="modal-overlay" onclick="closeModal('modal-assinante')"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Novo Assinante</h3>
+        <button onclick="closeModal('modal-assinante')" class="modal-close">&times;</button>
+      </div>
+      <form id="form-assinante" class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nome Completo *</label>
+            <input type="text" name="nome" required>
+          </div>
+          <div class="form-group">
+            <label>CPF/CNPJ *</label>
+            <input type="text" name="cpf_cnpj" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email">
+          </div>
+          <div class="form-group">
+            <label>Telefone *</label>
+            <input type="tel" name="telefone" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Endereço</label>
+            <input type="text" name="endereco">
+          </div>
+          <div class="form-group">
+            <label>Bairro</label>
+            <input type="text" name="bairro">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Cidade</label>
+            <input type="text" name="cidade">
+          </div>
+          <div class="form-group">
+            <label>UF</label>
+            <input type="text" name="uf" maxlength="2">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>CEP</label>
+            <input type="text" name="cep">
+          </div>
+          <div class="form-group">
+            <label>Plano *</label>
+            <select name="plano" required>
+              <option value="">Selecione...</option>
+              <option value="Básico">Básico</option>
+              <option value="Intermediário">Intermediário</option>
+              <option value="Premium">Premium</option>
+              <option value="Personalizado">Personalizado</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Valor Mensal (R$) *</label>
+            <input type="number" name="valor_mensal" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label>Dia Vencimento *</label>
+            <input type="number" name="dia_vencimento" min="1" max="31" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Data Início *</label>
+            <input type="date" name="data_inicio" required>
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select name="status">
+              <option value="Ativo">Ativo</option>
+              <option value="Inadimplente">Inadimplente</option>
+              <option value="Atrasado">Atrasado</option>
+              <option value="Cancelado">Cancelado</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Observações</label>
+          <textarea name="observacoes" rows="3"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" onclick="closeModal('modal-assinante')" class="btn btn-secondary">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: NOVO CONTRATO -->
+  <div id="modal-contrato" class="modal hidden">
+    <div class="modal-overlay" onclick="closeModal('modal-contrato')"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Gerar Contrato</h3>
+        <button onclick="closeModal('modal-contrato')" class="modal-close">&times;</button>
+      </div>
+      <form id="form-contrato" class="modal-body">
+        <div class="form-group">
+          <label>Selecionar Assinante *</label>
+          <select name="assinante_id" id="select-assinante" required>
+            <option value="">Selecione um assinante...</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Plano *</label>
+            <input type="text" name="plano" id="contrato-plano" required>
+          </div>
+          <div class="form-group">
+            <label>Valor Mensal (R$) *</label>
+            <input type="number" name="valor_mensal" id="contrato-valor" step="0.01" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Data Início *</label>
+            <input type="date" name="data_inicio" required>
+          </div>
+          <div class="form-group">
+            <label>Data Fim *</label>
+            <input type="date" name="data_fim" required>
+          </div>
+        </div>
+        <div class="info-box">
+          <p><strong>📋 Cláusulas incluídas automaticamente:</strong></p>
+          <ul>
+            <li>• Cláusula de Incolumidade</li>
+            <li>• Cláusula de Manutenção Técnica</li>
+            <li>• Cláusula de Quebra de Fidelidade</li>
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" onclick="closeModal('modal-contrato')" class="btn btn-secondary">Cancelar</button>
+          <button type="submit" class="btn btn-success">Gerar Contrato</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: VISUALIZAR CONTRATO -->
+  <div id="modal-view-contract" class="modal hidden">
+    <div class="modal-overlay" onclick="closeModal('modal-view-contract')"></div>
+    <div class="modal-content modal-large">
+      <div class="modal-header">
+        <h3>Visualizar Contrato</h3>
+        <div class="modal-actions">
+          <button onclick="printContract()" class="btn btn-primary">🖨️ Imprimir</button>
+          <button onclick="closeModal('modal-view-contract')" class="modal-close">&times;</button>
+        </div>
+      </div>
+      <div id="contract-content" class="modal-body">
+        <!-- Conteúdo do contrato será inserido aqui -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: COBRANÇA WHATSAPP -->
+  <div id="modal-cobranca" class="modal hidden">
+    <div class="modal-overlay" onclick="closeModal('modal-cobranca')"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Cobrança via WhatsApp</h3>
+        <button onclick="closeModal('modal-cobranca')" class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="whatsapp-header">
+          <div class="whatsapp-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+            </svg>
+          </div>
+          <h4>Enviar Cobrança</h4>
+          <p class="text-muted">A mensagem será enviada via WhatsApp para o assinante.</p>
+        </div>
+        <div class="form-group">
+          <label>Assinante</label>
+          <input type="text" id="cobranca-nome" readonly>
+        </div>
+        <div class="form-group">
+          <label>Telefone</label>
+          <input type="text" id="cobranca-telefone" readonly>
+        </div>
+        <div class="form-group">
+          <label>Valor</label>
+          <input type="text" id="cobranca-valor" readonly>
+        </div>
+        <div class="form-group">
+          <label>Mensagem</label>
+          <textarea id="cobranca-mensagem" rows="6"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button onclick="closeModal('modal-cobranca')" class="btn btn-secondary">Cancelar</button>
+          <button onclick="enviarWhatsApp()" class="btn btn-whatsapp">📱 Enviar WhatsApp</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTRATO PARA IMPRESSÃO -->
+  <div id="contract-print" class="hidden print-only">
+    <!-- Conteúdo do contrato para impressão -->
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
