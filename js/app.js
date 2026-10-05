@@ -59,29 +59,50 @@ function logout() {
 }
 
 // ============================================================
-// API CALLS
+// API CALLS - JSONP (para contornar CORS)
 // ============================================================
 
 async function apiCall(method, params, body = null) {
-  const url = new URL(WEB_APP_URL);
-  
-  if (method === 'GET') {
-    Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
-  }
-  
-  const options = {
-    method: method,
-    headers: {
-      'Content-Type': 'application/json',
+  return new Promise((resolve, reject) => {
+    const callbackName = 'jsonp_callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    
+    // Criar função global de callback
+    window[callbackName] = function(data) {
+      delete window[callbackName];
+      if (script.parentNode) {
+        document.body.removeChild(script);
+      }
+      resolve(data);
+    };
+    
+    // Criar script tag
+    const script = document.createElement('script');
+    script.onerror = function() {
+      delete window[callbackName];
+      if (script.parentNode) {
+        document.body.removeChild(script);
+      }
+      reject(new Error('Erro ao conectar com o servidor'));
+    };
+    
+    // Montar URL com callback
+    const url = new URL(WEB_APP_URL);
+    params.callback = callbackName;
+    
+    if (method === 'GET') {
+      Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+      script.src = url.toString();
+    } else {
+      // POST via JSONP não é suportado, usar GET com parâmetros
+      Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+      if (body) {
+        Object.keys(body).forEach(key => url.searchParams.append(key, body[key]));
+      }
+      script.src = url.toString();
     }
-  };
-  
-  if (method === 'POST' && body) {
-    options.body = JSON.stringify(body);
-  }
-  
-  const response = await fetch(url, options);
-  return await response.json();
+    
+    document.body.appendChild(script);
+  });
 }
 
 // ============================================================
